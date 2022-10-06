@@ -36,14 +36,16 @@ namespace StorageRestApiAuth
         {
             // This is the raw representation of the message signature.
             HttpMethod method = httpRequestMessage.Method;
-            String MessageSignature = String.Format("{0}\n\n\n{1}\n{5}\n\n\n\n{2}\n\n\n\n{3}{4}",
+            String MessageSignature = String.Format("{0}\n\n\n{1}\n{5}\n{6}\n\n\n{2}\n\n\n\n{3}{4}",
                       method.ToString(),
                       (method == HttpMethod.Get || method == HttpMethod.Head) ? String.Empty
                         : httpRequestMessage.Content.Headers.ContentLength.ToString(),
                       ifMatch,
                       GetCanonicalizedHeaders(httpRequestMessage),
                       GetCanonicalizedResource(httpRequestMessage.RequestUri, storageAccountName),
-                      md5);
+                      md5,
+                      (method == HttpMethod.Get || method == HttpMethod.Head) ? String.Empty
+                        : httpRequestMessage.Content.Headers.ContentType.ToString());
 
             // Now turn it into a byte array.
             byte[] SignatureBytes = Encoding.UTF8.GetBytes(MessageSignature);
